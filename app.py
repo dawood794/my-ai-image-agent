@@ -46,7 +46,7 @@ with col1:
         width = st.select_slider("Image Width", options=[512, 768, 1024], value=1024)
         height = st.select_slider("Image Height", options=[512, 768, 1024], value=1024)
 
-    generate_btn = st.Button("Generate Masterpiece ✨", type="primary")
+    generate_btn = st.button("Generate Masterpiece ✨", type="primary")
 
 with col2:
     st.subheader("🖼️ Generated Output")
