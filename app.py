@@ -4,10 +4,11 @@ import io
 import base64  # Added to decode the FLUX text string
 from PIL import Image
 
-st.set_page_config(page_title="Pro AI Image Agent", page_icon="🎨", layout="centered")
-
-st.title("🎨 Pro AI Image Generator Agent")
-st.write("Powered by the hyper-accurate FLUX.1-schnell model on Cloudflare.")
+st.set_page_config(
+    page_title="AI Image Generator Agent - Create Art with FLUX",
+    page_icon="🎨",
+    layout="centered"
+)
 
 # Pull Cloudflare configuration safely from Streamlit Secrets
 try:
