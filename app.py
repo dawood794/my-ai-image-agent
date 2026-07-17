@@ -8,38 +8,44 @@ from PIL import Image
 st.set_page_config(
     page_title="Pro AI Image Generator Agent - Create Art with FLUX",
     page_icon="🎨",
-    layout="wide"  # Wide container handles screen scaling best
+    layout="wide"
 )
 
-# 2. Inject Smart Responsive CSS (Hides panels & maximizes heading size)
+# 2. Inject Upgraded CSS (Fixes the top bar and brings header to a perfect size)
 st.markdown("""
     <style>
-        /* 🌟 TOP PANEL FIX: Completely hides the top panel, menu button, and decorative lines */
-        header {visibility: hidden !important;}
-        [data-testid="stHeader"] {display: none !important;}
-        [data-testid="stDecoration"] {display: none !important;}
-        .stAppDeployButton {display: none !important;}
+        /* 🌟 THE ULTIMATE TOP BAR REMOVER: Targets all known Streamlit header elements */
+        header, [data-testid="stHeader"], [data-testid="stDecoration"], .stAppDeployButton {
+            display: none !important;
+            visibility: hidden !important;
+            height: 0px !important;
+        }
         
-        /* Shift content up into the newly cleared space */
+        /* Targets modern Streamlit dynamic top padding panels */
+        iframe[title="streamlitApp"], .st-emotion-cache-18ni7th, .st-emotion-cache-z5fcl4 {
+            padding-top: 0px !important;
+        }
+        
+        /* Clean up top spacing now that the bar is destroyed */
         .main .block-container {
-            padding-top: 1.5rem !important;
+            padding-top: 2rem !important;
         }
 
-        /* Base Background Setup */
+        /* Base Background Layout */
         .stApp {
             background-color: #0e1117;
             color: #ffffff;
         }
         
-        /* 🌟 HEADING FIX: Made significantly larger, thicker, and forced to scale */
+        /* 🌟 FIXED HEADING: Clean, readable, and highly styled */
         .gradient-text {
             background: linear-gradient(45deg, #ff4b4b, #ff8f00);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            font-weight: 900 !important;
+            font-weight: 800 !important;
             margin-bottom: 5px;
             display: block;
-            line-height: 1.1;
+            line-height: 1.2;
         }
         
         /* Premium Card Containers */
@@ -59,7 +65,7 @@ st.markdown("""
             border: 1px solid #4b5563 !important;
         }
         
-        /* High-End Interactive Gradient Button */
+        /* Interactive Gradient Button */
         .stButton>button {
             background: linear-gradient(135deg, #ff4b4b 0%, #ff8f00 100%) !important;
             color: white !important;
@@ -84,7 +90,7 @@ st.markdown("""
         /* Desktop Configurations (PCs, Macs, Laptops) */
         @media (min-width: 769px) {
             .gradient-text {
-                font-size: 4.5rem !important; /* Huge title on desktop */
+                font-size: 2.5rem !important; /* Fixed: Perfectly balanced desktop size */
                 text-align: left;
             }
             div[data-testid="stVerticalBlock"] > div {
@@ -95,10 +101,9 @@ st.markdown("""
         /* Mobile Configurations (Smartphones and Tablets) */
         @media (max-width: 768px) {
             .gradient-text {
-                font-size: 3.0rem !important; /* Huge title on mobile screen */
+                font-size: 1.8rem !important; /* Fixed: Clean and readable screen fit on mobile */
                 text-align: center;
             }
-            /* Conserve screen real estate on smaller touch devices */
             div[data-testid="stVerticalBlock"] > div {
                 padding: 15px;
                 margin-bottom: 8px;
