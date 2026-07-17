@@ -11,10 +11,10 @@ st.set_page_config(
     layout="wide"
 )
 
-# 2. Inject Upgraded CSS (Fixes the top bar and brings header to a perfect size)
+# 2. Inject Upgraded CSS (Hides panels, sets balanced title sizing)
 st.markdown("""
     <style>
-        /* 🌟 THE ULTIMATE TOP BAR REMOVER: Targets all known Streamlit header elements */
+        /* TOP BAR REMOVER: Targets all known Streamlit header elements */
         header, [data-testid="stHeader"], [data-testid="stDecoration"], .stAppDeployButton {
             display: none !important;
             visibility: hidden !important;
@@ -26,7 +26,7 @@ st.markdown("""
             padding-top: 0px !important;
         }
         
-        /* Clean up top spacing now that the bar is destroyed */
+        /* Clean up top spacing now that the bar is gone */
         .main .block-container {
             padding-top: 2rem !important;
         }
@@ -37,7 +37,7 @@ st.markdown("""
             color: #ffffff;
         }
         
-        /* 🌟 FIXED HEADING: Clean, readable, and highly styled */
+        /* FIXED HEADING: Clean, readable, and highly styled */
         .gradient-text {
             background: linear-gradient(45deg, #ff4b4b, #ff8f00);
             -webkit-background-clip: text;
@@ -83,14 +83,29 @@ st.markdown("""
             box-shadow: 0px 8px 20px rgba(255, 75, 75, 0.4) !important;
         }
         
+        /* Custom download button styling override to make it distinct */
+        div.stDownloadButton > button {
+            background: #262730 !important;
+            color: #ffffff !important;
+            border: 1px solid #4b5563 !important;
+            padding: 10px 20px !important;
+            border-radius: 10px !important;
+            width: 100% !important;
+        }
+        div.stDownloadButton > button:hover {
+            background: #ff4b4b !important;
+            border-color: #ff4b4b !important;
+            color: white !important;
+        }
+        
         /* ==========================================
            RESPONSIVE DESIGN BREAKPOINTS (PC vs Mobile)
            ========================================== */
         
-        /* Desktop Configurations (PCs, Macs, Laptops) */
+        /* Desktop Configurations */
         @media (min-width: 769px) {
             .gradient-text {
-                font-size: 2.5rem !important; /* Fixed: Perfectly balanced desktop size */
+                font-size: 2.5rem !important;
                 text-align: left;
             }
             div[data-testid="stVerticalBlock"] > div {
@@ -98,10 +113,10 @@ st.markdown("""
             }
         }
         
-        /* Mobile Configurations (Smartphones and Tablets) */
+        /* Mobile Configurations */
         @media (max-width: 768px) {
             .gradient-text {
-                font-size: 1.8rem !important; /* Fixed: Clean and readable screen fit on mobile */
+                font-size: 1.8rem !important;
                 text-align: center;
             }
             div[data-testid="stVerticalBlock"] > div {
@@ -132,7 +147,7 @@ except KeyError:
 API_URL = f"https://api.cloudflare.com/client/v4/accounts/{ACCOUNT_ID}/ai/run/@cf/black-forest-labs/flux-1-schnell"
 headers = {"Authorization": f"Bearer {API_TOKEN}"}
 
-# Native responsive grid: side-by-side on PC desktop, stacked vertically on phone screens!
+# Native responsive grid
 col1, col2 = st.columns([1, 1], gap="large")
 
 with col1:
@@ -152,18 +167,14 @@ with col1:
 
 with col2:
     st.subheader("🖼️ Generated Art")
-    # Clean UI Placeholder instantiation
     image_placeholder = st.empty()
     image_placeholder.info("Your beautiful creation will display here once generated.")
 
 # 4. Prompt Logic Builder (Magic Enhancer)
 def enhance_prompt(original_prompt):
     clean_prompt = original_prompt.strip()
-    
-    # Target common celebrity, person, or portrait keyword triggers
     if any(name in clean_prompt.lower() for name in ["elon", "musk", "jeff", "bezos", "mark", "zuckerberg", "man", "woman", "person", "portrait", "boy", "girl"]):
         return f"A crisp, sharp-focus professional 85mm lens portrait of {clean_prompt}. Cinematic studio lighting, deep textures, natural skin details, highly detailed background, realistic photo style."
-    
     return f"A cinematic, breathtaking shot of {clean_prompt}. Beautiful lighting, realistic reflections, detailed environmental storytelling, shot on high-end camera lens, sharp, crisp details."
 
 # 5. Core Operational Lifecycle Event Loop
@@ -195,6 +206,14 @@ if generate_btn:
                         # Render the final image into the cleaned viewport container
                         image_placeholder.image(image, caption="Generation Complete 🎉", use_container_width=True)
                         st.success("Done!")
+                        
+                        # 🌟 THE NEW DOWNLOAD BUTTON: Injects right beneath the freshly rendered photo
+                        st.download_button(
+                            label="📥 Download Photo (PNG)",
+                            data=image_bytes,
+                            file_name="flux_masterpiece.png",
+                            mime="image/png"
+                        )
                     else:
                         st.error(f"Cloudflare API Error (Status {response.status_code}): {response.text}")
                         
