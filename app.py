@@ -11,23 +11,35 @@ st.set_page_config(
     layout="wide"  # Wide container handles screen scaling best
 )
 
-# 2. Inject Smart Responsive CSS (Adapts smoothly to Mobile and PC)
+# 2. Inject Smart Responsive CSS (Hides panels & maximizes heading size)
 st.markdown("""
     <style>
+        /* 🌟 TOP PANEL FIX: Completely hides the top panel, menu button, and decorative lines */
+        header {visibility: hidden !important;}
+        [data-testid="stHeader"] {display: none !important;}
+        [data-testid="stDecoration"] {display: none !important;}
+        .stAppDeployButton {display: none !important;}
+        
+        /* Shift content up into the newly cleared space */
+        .main .block-container {
+            padding-top: 1.5rem !important;
+        }
+
         /* Base Background Setup */
         .stApp {
             background-color: #0e1117;
             color: #ffffff;
         }
         
-        /* Responsive Gradient Title Heading */
+        /* 🌟 HEADING FIX: Made significantly larger, thicker, and forced to scale */
         .gradient-text {
             background: linear-gradient(45deg, #ff4b4b, #ff8f00);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            font-weight: 800;
-            margin-bottom: 0px;
-            text-align: center;
+            font-weight: 900 !important;
+            margin-bottom: 5px;
+            display: block;
+            line-height: 1.1;
         }
         
         /* Premium Card Containers */
@@ -72,7 +84,7 @@ st.markdown("""
         /* Desktop Configurations (PCs, Macs, Laptops) */
         @media (min-width: 769px) {
             .gradient-text {
-                font-size: 3.5rem;
+                font-size: 4.5rem !important; /* Huge title on desktop */
                 text-align: left;
             }
             div[data-testid="stVerticalBlock"] > div {
@@ -83,10 +95,10 @@ st.markdown("""
         /* Mobile Configurations (Smartphones and Tablets) */
         @media (max-width: 768px) {
             .gradient-text {
-                font-size: 2.2rem;
+                font-size: 3.0rem !important; /* Huge title on mobile screen */
                 text-align: center;
             }
-            /* Reduce padding blocks to claim screen space on tiny phone glass */
+            /* Conserve screen real estate on smaller touch devices */
             div[data-testid="stVerticalBlock"] > div {
                 padding: 15px;
                 margin-bottom: 8px;
@@ -143,7 +155,7 @@ with col2:
 def enhance_prompt(original_prompt):
     clean_prompt = original_prompt.strip()
     
-    # Target common celebrity, person, or landscape keyword triggers
+    # Target common celebrity, person, or portrait keyword triggers
     if any(name in clean_prompt.lower() for name in ["elon", "musk", "jeff", "bezos", "mark", "zuckerberg", "man", "woman", "person", "portrait", "boy", "girl"]):
         return f"A crisp, sharp-focus professional 85mm lens portrait of {clean_prompt}. Cinematic studio lighting, deep textures, natural skin details, highly detailed background, realistic photo style."
     
@@ -172,11 +184,11 @@ if generate_btn:
                         image_bytes = base64.b64decode(base64_image_string)
                         image = Image.open(io.BytesIO(image_bytes))
                         
-                        # 🌟 THE LAYOUT FIX: Wipes out the placeholder description info container completely
+                        # Wipes out the placeholder container completely
                         image_placeholder.empty()
                         
                         # Render the final image into the cleaned viewport container
-                        image_placeholder.image(image, caption="Generation Complete 🎉", width="stretch")
+                        image_placeholder.image(image, caption="Generation Complete 🎉", use_container_width=True)
                         st.success("Done!")
                     else:
                         st.error(f"Cloudflare API Error (Status {response.status_code}): {response.text}")
