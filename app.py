@@ -4,69 +4,102 @@ import io
 import base64
 from PIL import Image
 
-# 1. Page Config at the very top
+# 1. Responsive Page Configuration
 st.set_page_config(
     page_title="Pro AI Image Generator Agent - Create Art with FLUX",
     page_icon="🎨",
-    layout="wide"  # Changed to wide layout for a sleek dashboard feel
+    layout="wide"  # Wide container acts as our responsive viewport
 )
 
-# 2. Inject Custom CSS for a beautiful Dark Modern UI
+# 2. Inject Smart Responsive CSS (Adapts to Mobile and PC)
 st.markdown("""
     <style>
-        /* Main background and text */
+        /* Base Page Setup */
         .stApp {
             background-color: #0e1117;
             color: #ffffff;
         }
         
-        /* Heading style with gradient */
+        /* Responsive Gradient Header */
         .gradient-text {
             background: linear-gradient(45deg, #ff4b4b, #ff8f00);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            font-size: 3rem;
             font-weight: 800;
             margin-bottom: 0px;
+            text-align: center;
         }
         
-        /* Card-style container backgrounds */
+        /* Modern Card Containers */
         div[data-testid="stVerticalBlock"] > div {
             background-color: #161a24;
             padding: 20px;
             border-radius: 15px;
             border: 1px solid #262730;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
         
-        /* Input borders and text colors */
-        .stTextArea textarea, .stTextInput input {
+        /* Input Styling */
+        .stTextArea textarea {
             background-color: #0e1117 !important;
             color: #ffffff !important;
             border-radius: 10px !important;
             border: 1px solid #4b5563 !important;
         }
         
-        /* Custom styled button */
+        /* Action Button */
         .stButton>button {
             background: linear-gradient(135deg, #ff4b4b 0%, #ff8f00 100%) !important;
             color: white !important;
             border: none !important;
-            padding: 12px 28px !important;
+            padding: 14px 28px !important;
             font-weight: bold !important;
+            font-size: 1.1rem !important;
             border-radius: 12px !important;
             transition: all 0.3s ease !important;
             width: 100% !important;
         }
         
         .stButton>button:hover {
-            transform: scale(1.02) !important;
-            box-shadow: 0px 5px 15px rgba(255, 75, 75, 0.4) !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0px 8px 20px rgba(255, 75, 75, 0.4) !important;
+        }
+        
+        /* ==========================================
+           RESPONSIVE DESIGN BREAKPOINTS (PC vs Mobile)
+           ========================================== */
+        
+        /* Desktop Screens (PCs and Laptops) */
+        @media (min-width: 769px) {
+            .gradient-text {
+                font-size: 3.5rem;
+                text-align: left;
+            }
+            div[data-testid="stVerticalBlock"] > div {
+                padding: 30px;
+            }
+        }
+        
+        /* Mobile Screens (Phones and Tablets) */
+        @media (max-width: 768px) {
+            .gradient-text {
+                font-size: 2.2rem;
+                text-align: center;
+            }
+            /* Reduce heavy spacing to save screen room on phones */
+            div[data-testid="stVerticalBlock"] > div {
+                padding: 15px;
+                margin-bottom: 8px;
+            }
+            .stButton>button {
+                padding: 12px 20px !important;
+                font-size: 1rem !important;
+            }
         }
     </style>
 """, unsafe_allow_html=True)
 
-# App UI Header with Gradient text
+# Responsive UI Header
 st.markdown('<p class="gradient-text">🎨 Pro AI Image Agent</p>', unsafe_allow_html=True)
 st.write("Powered by the hyper-accurate **FLUX.1-schnell** engine on Cloudflare.")
 
@@ -82,8 +115,9 @@ except KeyError:
 API_URL = f"https://api.cloudflare.com/client/v4/accounts/{ACCOUNT_ID}/ai/run/@cf/black-forest-labs/flux-1-schnell"
 headers = {"Authorization": f"Bearer {API_TOKEN}"}
 
-# Create a clean side-by-side dashboard layout
-col1, col2 = st.columns([1, 1])
+# Streamlit columns are automatically responsive!
+# They sit side-by-side on PC and stack vertically on Mobile.
+col1, col2 = st.columns([1, 1], gap="large")
 
 with col1:
     st.subheader("🎛️ Control Panel")
@@ -91,11 +125,10 @@ with col1:
     # User Prompt Input
     prompt = st.text_area(
         label="What do you want the AI to create?",
-        placeholder="Describe your vision in detail (e.g., 'A professional photo of a red sports car speeding through a wet city street at night, neon lights reflect on puddles, shot on 35mm lens')...",
+        placeholder="Describe your vision (e.g., 'A professional photo of a red sports car speeding through a wet city street at night')...",
         height=120
     )
     
-    # Custom adjustments packed in a clean toggle and slider
     use_enhancer = st.toggle("✨ Auto-Enhance Prompt (Recommended)", value=True)
     steps = st.slider("Detail Steps (FLUX optimal is 4-8)", min_value=4, max_value=8, value=4, step=1)
     
@@ -109,12 +142,8 @@ with col2:
 # The "Magic Enhancer" Engine
 def enhance_prompt(original_prompt):
     clean_prompt = original_prompt.strip()
-    
-    # Direct check for portraits/people
     if any(name in clean_prompt.lower() for name in ["elon", "musk", "jeff", "bezos", "mark", "zuckerberg", "man", "woman", "person", "portrait", "boy", "girl"]):
         return f"A crisp, sharp-focus professional 85mm lens portrait of {clean_prompt}. Cinematic studio lighting, deep textures, natural skin details, highly detailed background, realistic photo style."
-    
-    # Standard enhancement for generic scenes/objects
     return f"A cinematic, breathtaking shot of {clean_prompt}. Beautiful lighting, realistic reflections, detailed environmental storytelling, shot on high-end camera lens, sharp, crisp details."
 
 if generate_btn:
@@ -135,13 +164,10 @@ if generate_btn:
                     
                     if response.status_code == 200:
                         json_data = response.json()
-                        
-                        # Extract and decode the base64 image data string
                         base64_image_string = json_data["result"]["image"]
                         image_bytes = base64.b64decode(base64_image_string)
                         image = Image.open(io.BytesIO(image_bytes))
                         
-                        # Display the beautiful output inside our placeholder card!
                         image_placeholder.image(image, caption="Generation Complete", use_container_width=True)
                         st.success("Done!")
                     else:
